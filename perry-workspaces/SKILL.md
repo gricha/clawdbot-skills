@@ -80,7 +80,7 @@ Gotchas:
 
 ```bash
 # List workspaces
-perry list
+perry ls
 
 # Stop a workspace
 perry stop my-proj

@@ -8,6 +8,8 @@ metadata: {"clawdbot":{"emoji":"🛠️"}}
 
 Dispatch coding tasks to isolated Perry workspaces on your tailnet. Primary agents: **OpenCode** and **Claude Code**.
 
+> **See also:** [perry-workspaces](../perry-workspaces/SKILL.md) for workspace management basics.
+
 ## Quick Reference
 
 | Action | Command |
@@ -54,12 +56,16 @@ The wake callback URL: `http://<tailnet-ip>:18789/api/wake`
 Include wake instruction in the prompt so the agent notifies when done:
 
 ```bash
+# Get wake IP first
+WAKE_IP=$(tailscale status --self --json | jq -r '.Self.TailscaleIPs[0]')
+TOKEN="<your-gateway-token>"
+
 ssh -t workspace@<name> "cd /workspace && opencode run 'Build feature X.
 
 When completely finished, notify me by running:
-curl -X POST http://100.70.35.111:18789/api/wake \\
+curl -X POST http://${WAKE_IP}:18789/api/wake \\
   -H \"Content-Type: application/json\" \\
-  -H \"Authorization: Bearer <token>\" \\
+  -H \"Authorization: Bearer ${TOKEN}\" \\
   -d \"{\\\"text\\\": \\\"Done: Built feature X on <name>\\\", \\\"mode\\\": \\\"now\\\"}\"
 '"
 ```
@@ -68,8 +74,8 @@ curl -X POST http://100.70.35.111:18789/api/wake \\
 
 After dispatching, schedule a cron reminder as backup:
 
-```
-cron add --in 20m "Fallback check: <workspace> for <task>. The agent should have woken us by now. If not, check: ssh workspace@<name> 'cd /workspace && git log -1 && git status'"
+```bash
+clawdbot cron add --at +20m --message "Fallback check: <workspace> for <task>. The agent should have woken us by now. If not, check: ssh workspace@<name> 'cd /workspace && git log -1 && git status'"
 ```
 
 The agent *should* wake us when done. The cron is just insurance.
@@ -97,7 +103,7 @@ When done: curl -X POST http://${WAKE_IP}:18789/api/wake -H \"Authorization: Bea
 ' > /tmp/opencode.log 2>&1 &"
 
 # Schedule backup check
-cron add --in 20m "Fallback check: opencode on <name>"
+clawdbot cron add --at +20m --message "Fallback check: opencode on <name>"
 ```
 
 ---
@@ -152,7 +158,7 @@ for pr in 86 87 88; do
 done
 
 # Schedule backup check
-cron add --in 20m "Fallback check: PR review batch (86, 87, 88)"
+clawdbot cron add --at +20m --message "Fallback check: PR review batch (86, 87, 88)"
 
 # After done: collect results and post
 for pr in 86 87 88; do
@@ -183,7 +189,7 @@ ssh workspace@fix-issue-99 "cd /workspace && git checkout -b fix/issue-99 && noh
 When finished: curl -X POST http://<WAKE_IP>:18789/api/wake ...' > /tmp/fix.log 2>&1 &"
 
 # Schedule backup check
-cron add --in 20m "Fallback check: issue fixes 78, 99"
+clawdbot cron add --at +20m --message "Fallback check: issue fixes 78, 99"
 
 # After completion: push and PR
 ssh workspace@fix-issue-78 "cd /workspace && git push -u origin fix/issue-78"
