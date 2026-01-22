@@ -1,5 +1,5 @@
 ---
-name: coding-workflow
+name: perry-coding-agents
 description: Dispatch coding tasks to OpenCode or Claude Code on Perry workspaces. Use for development work, PR reviews, or any coding task requiring an isolated environment.
 metadata: {"clawdbot":{"emoji":"🛠️"}}
 ---

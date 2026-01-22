@@ -1,5 +1,5 @@
 ---
-name: perry
+name: perry-workspaces
 description: Create and manage isolated Docker workspaces on your tailnet with Claude Code and OpenCode pre-installed. Use when working with Perry workspaces, connecting to coding agents, or managing remote development environments.
 ---
 
