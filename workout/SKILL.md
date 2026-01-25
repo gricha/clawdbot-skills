@@ -1,6 +1,6 @@
 ---
 name: workout
-description: Track workouts, log sets, manage exercises and templates with workout-cli. Use when helping users record gym sessions, view history, or analyze strength progression.
+description: Track workouts, log sets, manage exercises and templates with workout-cli. Supports multi-user profiles. Use when helping users record gym sessions, view history, or analyze strength progression.
 metadata: {"clawdbot":{"emoji":"🏋️","requires":{"bins":["workout"]}}}
 ---
 
@@ -27,6 +27,38 @@ Then add to PATH: `export PATH="$HOME/.workout-cli/bin:$PATH"`
 | Finish | `workout done` |
 | View last | `workout last` |
 | Check PRs | `workout pr` |
+| Undo last set | `workout undo` |
+| Edit a set | `workout edit bench-press 2 155 8` |
+| Delete a set | `workout delete bench-press 3` |
+
+---
+
+## Multi-User Profiles
+
+Multiple people can track workouts independently using profiles.
+
+```bash
+# List all profiles
+workout profile list
+
+# Create a new profile
+workout profile create sarah
+
+# Delete a profile
+workout profile delete old-profile
+```
+
+When multiple profiles exist, specify which one:
+
+```bash
+workout --profile mike start push-day
+workout --profile mike log bench-press 185 8
+workout --profile mike done
+```
+
+- **Single profile**: Commands work without `--profile` (backwards compatible)
+- **Shared exercises**: Exercise library is shared across all profiles
+- **Per-user data**: Templates, workouts, config, and current session are per-profile
 
 ---
 
@@ -100,6 +132,29 @@ workout cancel
 workout status
 # Shows current exercises, sets logged, and notes
 ```
+
+### Undo, Edit & Delete Sets
+
+Fix mistakes during a workout without canceling:
+
+```bash
+# Remove last logged set (any exercise)
+workout undo
+
+# Remove last set of specific exercise
+workout undo bench-press
+
+# Edit set 2: change weight and reps
+workout edit bench-press 2 155 8
+
+# Edit set with options
+workout edit bench-press 2 --reps 10 --rir 2
+
+# Delete set 3 entirely
+workout delete bench-press 3
+```
+
+Set numbers are 1-indexed.
 
 ---
 
